@@ -141,7 +141,7 @@ main() {
   local parent_title="Live smoke parent ${RUN_ID}"
   local worker_title="Live smoke worker ${RUN_ID}"
   local setup_prompt
-  setup_prompt="Please run only the setup half of the Kanban live smoke. Use the Commander and Advisor Flow skills. Use tenant '${TENANT}'. First run A1_PLAN. Then create exactly one parent Kanban task with title '${parent_title}', assignee 'commander', tenant '${TENANT}', workspace_path '${ROOT}', and a body summarizing the user request. Comment the A1 result on the parent. Then prepare exactly one read-only Worker assignment with title '${worker_title}', assignee 'default', tenant '${TENANT}', workspace_path '${ROOT}', scope 'read-only repository evidence only', and completion contract 'kanban_complete or kanban_block'. Run A2_DELEGATION before creating the Worker task. Create that one Worker task in a dispatchable ready state. Do not create a blocking parent dependency; if a Kanban link would prevent dispatch, do not link. Comment the A2 result on the parent. Do not dispatch. Do not run tests. Do not import advisor_gate or hermes internals from Python. Stop after reporting the parent and worker task ids."
+  setup_prompt="Please run only the setup half of the Kanban live smoke. Use the Commander and Advisor Flow skills. Use tenant '${TENANT}'. First run A1_PLAN. Then create exactly one parent Kanban task with title '${parent_title}', assignee 'commander', tenant '${TENANT}', workspace_path '${ROOT}', initial_status 'blocked', and a body summarizing the user request. The parent is an orchestration record, not dispatchable Worker work. Comment the A1 result on the parent. Then prepare exactly one read-only Worker assignment with title '${worker_title}', assignee 'default', tenant '${TENANT}', workspace_path '${ROOT}', scope 'read-only repository evidence only', and completion contract 'kanban_complete or kanban_block'. Run A2_DELEGATION before creating the Worker task. Create that one Worker task in a dispatchable ready state. Do not create a blocking parent dependency; if a Kanban link would prevent dispatch, do not link. Comment the A2 result on the parent. Do not dispatch. Do not run tests. Do not import advisor_gate or hermes internals from Python. Stop after reporting the parent and worker task ids."
   run_capture commander-setup 900 "${HERMES}" -p commander chat -Q --max-turns 35 -q "${setup_prompt}" \
     || fail "Commander setup failed"
   local session_id
@@ -164,6 +164,10 @@ main() {
   printf '%s\n' "${worker_id}" > "${OUT_DIR}/worker_task_id.txt"
   log "parent_task_id=${parent_id}"
   log "worker_task_id=${worker_id}"
+
+  run_capture block-parent-dispatch 60 "${HERMES}" kanban block --kind capability "${parent_id}" \
+    "Parent orchestration record for managed live smoke; blocked so dispatcher only runs the Worker task." \
+    || fail "could not block parent orchestration task before dispatch"
 
   run_capture ready-before-dispatch 60 "${HERMES}" kanban list --status ready --json \
     || fail "could not list ready tasks"

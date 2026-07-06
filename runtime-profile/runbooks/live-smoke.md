@@ -246,6 +246,9 @@ Expected Commander behavior:
 - Dispatch Worker task(s) through the official Hermes Kanban dispatcher. On the
   Pi runtime, use `/home/pi/.local/bin/hermes kanban dispatch --max 1 --json`
   if a terminal command is required.
+- Keep parent/orchestration tasks out of the ready queue before dispatch. The
+  managed driver blocks the parent orchestration record so only the Worker task
+  is dispatchable.
 - Wait for `done` or `blocked`.
 - If Advisor returns `CHANGES_REQUIRED`, comment the finding and create or
   reopen Kanban work before retrying.
