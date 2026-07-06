@@ -228,12 +228,17 @@ Expected Commander behavior:
 - Include Kanban task ids, completion summaries, metadata, and unresolved items
   in `A3_FINAL`.
 - Run `advisor_resolution_gate` before final delivery.
+- Return the exact `final_answer_draft` audited by the current `A3_FINAL`;
+  no wording changes, added preface, or extra status line may be added after
+  the audit.
 
 Expected evidence:
 
 - One Commander session id.
 - One parent Kanban task id.
 - `A1_PLAN`, `A2_DELEGATION`, `A3_FINAL`, and `RESOLUTION_GATE` receipts.
+- The final answer text exactly matches the latest passed `A3_FINAL`
+  `final_answer_draft`.
 - A Kanban comment recording each Advisor result.
 - One or more Worker Kanban task ids.
 - Each Worker task has `kanban_show` and `kanban_complete` or `kanban_block`

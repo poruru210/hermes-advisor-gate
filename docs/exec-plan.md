@@ -185,6 +185,8 @@ Advisor の `CHANGES_REQUIRED` または `BLOCK` は、Kanban タスクが自動
 - Worker が `kanban_show` して `kanban_complete` する。
 - Commander が結果を統合し、A3 と ResolutionGate を通す。
 - 最終回答を返す。
+- 最終回答は、直近の `A3_FINAL` で監査された
+  `final_answer_draft` と完全一致させる。
 
 完了条件:
 
@@ -221,6 +223,7 @@ Advisor の `CHANGES_REQUIRED` または `BLOCK` は、Kanban タスクが自動
 | Advisor 責務 | Advisor が実行せず、監査結果だけを返す |
 | 証跡 | Kanban 上で計画、監査、作業結果、未解決事項を追える |
 | 再現性 | Pi 上で手順書どおりに smoke を再実行できる |
+| 最終回答の鮮度 | 直近の `A3_FINAL` が監査した `final_answer_draft` と実際の最終回答が一致する |
 
 ## 残リスク
 

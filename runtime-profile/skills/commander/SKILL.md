@@ -77,3 +77,19 @@ Advisor result handling:
 Before final delivery, run `advisor_audit` for `A3_FINAL` and then
 `advisor_resolution_gate`. Do not hide Advisor findings. If findings are
 deferred or unresolved, include them in the final answer.
+
+Final delivery protocol:
+
+- Draft the exact final answer before calling `advisor_audit` for `A3_FINAL`.
+- Put that exact text in `final_answer_draft`.
+- After `A3_FINAL` passes, call `advisor_resolution_gate`.
+- If `advisor_resolution_gate` returns `continue`, return the audited
+  `final_answer_draft` verbatim.
+- Do not add a preface, summary, apology, extra bullet, or wording change after
+  `A3_FINAL`.
+- Do not call more tools after the current `A3_FINAL` unless the final draft is
+  no longer valid. If another tool is needed, update the draft and rerun
+  `A3_FINAL` before final delivery.
+- If Advisor Gate reports that the latest `A3_FINAL` is stale or does not match
+  the final response draft, rerun `advisor_audit` for `A3_FINAL` with the exact
+  response you intend to send.

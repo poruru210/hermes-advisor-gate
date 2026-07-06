@@ -120,6 +120,11 @@ For `A3_FINAL`, the packet must have this shape:
 - `final_answer_draft`: the exact final answer draft to be audited.
 - `flow_summary`: concise Plan/Delegation/Exception/Final flow summary.
 
+`final_answer_draft` is binding. After `A3_FINAL` passes and the resolution
+gate permits continuation, the final answer must be the same text. Any extra
+heading, rewritten sentence, omitted limitation, or added status line makes the
+receipt stale and requires a new `A3_FINAL` audit.
+
 When subagents were used, include worker evidence in `actions_taken` or
 `tests_or_checks`. The plugin also adds observed child session records to A2/A3
 audit packets when Hermes provides parent/child hook data.
@@ -156,6 +161,8 @@ Before final delivery, call `advisor_resolution_gate`:
   `rejected` with a reason and evidence.
 - Do not hide unresolved or deferred findings; include them in `known_unresolved`
   and in the final answer.
+- Return the audited final draft verbatim after the resolution gate permits
+  continuation. If you need to edit the final answer, rerun `A3_FINAL` first.
 
 Record Advisor results on Kanban:
 
