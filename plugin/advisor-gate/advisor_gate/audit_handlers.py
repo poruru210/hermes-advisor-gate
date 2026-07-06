@@ -17,7 +17,9 @@ from .schemas import (
     FindingCategory,
     Severity,
     advisor_result_json_schema,
+    delegation_payload_from_dict,
     final_payload_from_dict,
+    plan_payload_from_dict,
     result_from_dict,
     result_to_dict,
 )
@@ -48,8 +50,29 @@ def _error_result(phase: AdvisorPhase, message: str, error_class: str) -> Adviso
 
 
 def _validate_audit_packet(phase: AdvisorPhase, packet: dict[str, Any]) -> None:
-    if phase is AdvisorPhase.A3_FINAL:
+    if phase is AdvisorPhase.A1_PLAN:
+        plan_payload_from_dict(packet)
+    elif phase is AdvisorPhase.A2_DELEGATION:
+        delegation_payload_from_dict(packet)
+    elif phase is AdvisorPhase.A3_FINAL:
         final_payload_from_dict(packet)
+
+
+def _enrich_audit_packet(
+    *,
+    phase: AdvisorPhase,
+    packet: dict[str, Any],
+    store: ReceiptStore,
+    session_id: str,
+) -> dict[str, Any]:
+    if phase not in {AdvisorPhase.A2_DELEGATION, AdvisorPhase.A3_FINAL}:
+        return packet
+    observed_subagents = store.subagent_role_summary(session_id)
+    if not observed_subagents:
+        return packet
+    enriched = dict(packet)
+    enriched.setdefault("observed_subagents", list(observed_subagents))
+    return enriched
 
 
 def _coerce_llm_result(raw: Any, phase: AdvisorPhase) -> AdvisorResult:
@@ -115,6 +138,7 @@ def advisor_audit_handler(
     config = config or load_plugin_config()
     store = store or ReceiptStore.from_path(config.receipt_path)
     effective_session = str(args.get("session_id") or session_id or "")
+    stored_packet: Any = args.get("packet", {})
     call_context = merge_call_context(
         cast(dict[str, Any], redact_secrets(kwargs)),
         latest_advisor_tool_context(
@@ -132,6 +156,13 @@ def advisor_audit_handler(
         if not config.enabled:
             raise RuntimeError("advisor_gate.enabled is false")
         packet = cast(dict[str, Any], redact_secrets(packet))
+        packet = _enrich_audit_packet(
+            phase=phase,
+            packet=packet,
+            store=store,
+            session_id=effective_session,
+        )
+        stored_packet = packet
         _validate_audit_packet(phase, packet)
         packet_size = len(json.dumps(packet, ensure_ascii=False, sort_keys=True))
         if config.max_input_chars > 0 and packet_size > config.max_input_chars:
@@ -157,7 +188,7 @@ def advisor_audit_handler(
         result=result,
         source=TOOL_NAME,
         extra={
-            "packet": redact_secrets(args.get("packet", {})),
+            "packet": redact_secrets(stored_packet),
             "call_context": call_context,
         },
     )

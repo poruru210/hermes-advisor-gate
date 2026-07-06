@@ -1,5 +1,4 @@
 import pytest
-
 from advisor_gate.schemas import (
     AdvisorPhase,
     AdvisorVerdict,
@@ -8,7 +7,9 @@ from advisor_gate.schemas import (
     FindingResolutionStatus,
     ResolutionDecision,
     Severity,
+    delegation_payload_from_dict,
     final_payload_from_dict,
+    plan_payload_from_dict,
     resolution_gate_from_dict,
     resolution_gate_to_dict,
     result_from_dict,
@@ -174,3 +175,54 @@ def test_final_payload_requires_source_image_shape():
 
     assert payload.actions_taken[0]["item_id"] == "A-1"
     assert payload.tests_or_checks[0]["summary"] == "python -m pytest"
+
+
+def test_plan_payload_requires_source_image_shape():
+    payload = plan_payload_from_dict(
+        {
+            "user_message": "Implement the gate.",
+            "commander_interpretation": "Use plugin changes only.",
+            "task_plan": ["inspect", {"step": "implement"}],
+            "coverage_table": [{"requirement": "A1", "coverage": "schema test"}],
+            "risk_level": "medium",
+            "constraints": ["No Hermes core patch."],
+            "source_evidence": ["docs"],
+            "known_unresolved": [],
+        }
+    )
+
+    assert payload.user_message == "Implement the gate."
+    assert payload.task_plan[0]["summary"] == "inspect"
+
+
+def test_delegation_payload_requires_worker_role_scope_and_evidence():
+    payload = delegation_payload_from_dict(
+        {
+            "commander_plan": "Delegate focused verification.",
+            "worker_assignments": [
+                {
+                    "worker_id": "worker-1",
+                    "child_role": "leaf",
+                    "scope": "Run focused checks.",
+                    "expected_evidence": ["pytest result"],
+                }
+            ],
+            "empty_result_policy": "Mark empty output unresolved.",
+            "risk_level": "medium",
+        }
+    )
+
+    assert payload.worker_assignments[0].child_role == "leaf"
+    assert payload.worker_assignments[0].expected_evidence[0]["summary"] == "pytest result"
+
+
+def test_delegation_payload_rejects_empty_worker_assignments():
+    with pytest.raises(ValueError, match="worker_assignments"):
+        delegation_payload_from_dict(
+            {
+                "commander_plan": "Delegate focused verification.",
+                "worker_assignments": [],
+                "empty_result_policy": "Mark empty output unresolved.",
+                "risk_level": "medium",
+            }
+        )

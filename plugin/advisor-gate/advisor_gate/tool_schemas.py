@@ -25,8 +25,13 @@ ADVISOR_AUDIT_SCHEMA = {
             "packet": {
                 "type": "object",
                 "description": (
-                    "Evidence packet to audit. Include task, plan/final draft, "
-                    "evidence, receipts, and known_unresolved as appropriate."
+                    "Evidence packet to audit. A1 requires user_message, "
+                    "commander_interpretation, task_plan, coverage_table, and "
+                    "risk_level. A2 requires commander_plan, worker_assignments "
+                    "with worker_id, child_role, scope, expected_evidence, plus "
+                    "empty_result_policy and risk_level. A3_FINAL requires "
+                    "actions_taken, tests_or_checks, known_unresolved, "
+                    "final_answer_draft, and flow_summary."
                 ),
             },
             "session_id": {

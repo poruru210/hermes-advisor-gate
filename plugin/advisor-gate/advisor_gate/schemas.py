@@ -99,6 +99,36 @@ class FinalPayload:
     flow_summary: str
 
 
+@dataclass(frozen=True)
+class PlanPayload:
+    user_message: str
+    commander_interpretation: str
+    task_plan: tuple[dict[str, Any], ...]
+    coverage_table: tuple[dict[str, Any], ...]
+    risk_level: str
+    constraints: tuple[str, ...] = field(default_factory=tuple)
+    source_evidence: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    known_unresolved: tuple[str, ...] = field(default_factory=tuple)
+
+
+@dataclass(frozen=True)
+class WorkerAssignment:
+    worker_id: str
+    child_role: str
+    scope: str
+    expected_evidence: tuple[dict[str, Any], ...]
+
+
+@dataclass(frozen=True)
+class DelegationPayload:
+    commander_plan: str
+    worker_assignments: tuple[WorkerAssignment, ...]
+    empty_result_policy: str
+    risk_level: str
+    handoff_expectations: str = ""
+    known_unresolved: tuple[str, ...] = field(default_factory=tuple)
+
+
 def _coerce_enum(enum_type: type[EnumT], value: Any, field_name: str) -> EnumT:
     try:
         return enum_type(str(value))
@@ -324,6 +354,125 @@ def final_payload_from_dict(raw: dict[str, Any]) -> FinalPayload:
     return payload
 
 
+def plan_payload_from_dict(raw: dict[str, Any]) -> PlanPayload:
+    if not isinstance(raw, dict):
+        raise ValueError("PlanPayload must be a JSON object")
+    required = [
+        "user_message",
+        "commander_interpretation",
+        "task_plan",
+        "coverage_table",
+        "risk_level",
+    ]
+    missing = [key for key in required if key not in raw]
+    if missing:
+        raise ValueError(f"PlanPayload missing required field(s): {', '.join(missing)}")
+
+    task_plan_raw = raw["task_plan"]
+    coverage_raw = raw["coverage_table"]
+    if not isinstance(task_plan_raw, list):
+        raise ValueError("task_plan must be a list")
+    if not isinstance(coverage_raw, list):
+        raise ValueError("coverage_table must be a list")
+
+    constraints_raw = raw.get("constraints", [])
+    evidence_raw = raw.get("source_evidence", [])
+    unresolved_raw = raw.get("known_unresolved", [])
+    if not isinstance(constraints_raw, list):
+        raise ValueError("constraints must be a list")
+    if not isinstance(evidence_raw, list):
+        raise ValueError("source_evidence must be a list")
+    if not isinstance(unresolved_raw, list):
+        raise ValueError("known_unresolved must be a list")
+
+    payload = PlanPayload(
+        user_message=_required_string(raw, "user_message"),
+        commander_interpretation=_required_string(raw, "commander_interpretation"),
+        task_plan=tuple(_coerce_non_empty_object_list(task_plan_raw, "task_plan")),
+        coverage_table=tuple(_coerce_non_empty_object_list(coverage_raw, "coverage_table")),
+        risk_level=_required_string(raw, "risk_level"),
+        constraints=_coerce_string_tuple(constraints_raw),
+        source_evidence=tuple(_coerce_object_list(evidence_raw, "source_evidence")),
+        known_unresolved=_coerce_string_tuple(unresolved_raw),
+    )
+    validate_plan_payload(payload)
+    return payload
+
+
+def delegation_payload_from_dict(raw: dict[str, Any]) -> DelegationPayload:
+    if not isinstance(raw, dict):
+        raise ValueError("DelegationPayload must be a JSON object")
+    required = [
+        "commander_plan",
+        "worker_assignments",
+        "empty_result_policy",
+        "risk_level",
+    ]
+    missing = [key for key in required if key not in raw]
+    if missing:
+        raise ValueError(f"DelegationPayload missing required field(s): {', '.join(missing)}")
+
+    assignments_raw = raw["worker_assignments"]
+    if not isinstance(assignments_raw, list):
+        raise ValueError("worker_assignments must be a list")
+    if not assignments_raw:
+        raise ValueError("worker_assignments must not be empty")
+
+    unresolved_raw = raw.get("known_unresolved", [])
+    if not isinstance(unresolved_raw, list):
+        raise ValueError("known_unresolved must be a list")
+
+    payload = DelegationPayload(
+        commander_plan=_required_string(raw, "commander_plan"),
+        worker_assignments=tuple(
+            worker_assignment_from_dict(item, index)
+            for index, item in enumerate(assignments_raw)
+        ),
+        empty_result_policy=_required_string(raw, "empty_result_policy"),
+        risk_level=_required_string(raw, "risk_level"),
+        handoff_expectations=str(raw.get("handoff_expectations") or "").strip(),
+        known_unresolved=_coerce_string_tuple(unresolved_raw),
+    )
+    validate_delegation_payload(payload)
+    return payload
+
+
+def worker_assignment_from_dict(raw: Any, index: int) -> WorkerAssignment:
+    if not isinstance(raw, dict):
+        raise ValueError(f"worker_assignments[{index}] must be an object")
+    required = ["worker_id", "child_role", "scope", "expected_evidence"]
+    missing = [key for key in required if key not in raw]
+    if missing:
+        raise ValueError(
+            f"worker_assignments[{index}] missing required field(s): {', '.join(missing)}"
+        )
+    evidence_raw = raw["expected_evidence"]
+    if not isinstance(evidence_raw, list):
+        raise ValueError(f"worker_assignments[{index}].expected_evidence must be a list")
+    assignment = WorkerAssignment(
+        worker_id=_required_string(raw, "worker_id"),
+        child_role=_required_string(raw, "child_role"),
+        scope=_required_string(raw, "scope"),
+        expected_evidence=tuple(
+            _coerce_non_empty_object_list(
+                evidence_raw,
+                f"worker_assignments[{index}].expected_evidence",
+            )
+        ),
+    )
+    validate_worker_assignment(assignment, index)
+    return assignment
+
+
+def _required_string(raw: dict[str, Any], field_name: str) -> str:
+    if raw[field_name] is None:
+        raise ValueError(f"{field_name} must not be empty")
+    value = str(raw[field_name]).strip()
+    if not value:
+        raise ValueError(f"{field_name} must not be empty")
+    return value
+
+
 def _coerce_object_list(raw: list[Any], field_name: str) -> list[dict[str, Any]]:
     objects: list[dict[str, Any]] = []
     for index, item in enumerate(raw):
@@ -335,6 +484,93 @@ def _coerce_object_list(raw: list[Any], field_name: str) -> list[dict[str, Any]]
             continue
         raise ValueError(f"{field_name}[{index}] must be an object or non-empty string")
     return objects
+
+
+def _coerce_non_empty_object_list(raw: list[Any], field_name: str) -> list[dict[str, Any]]:
+    objects = _coerce_object_list(raw, field_name)
+    if not objects:
+        raise ValueError(f"{field_name} must not be empty")
+    return objects
+
+
+def _coerce_string_tuple(raw: list[Any]) -> tuple[str, ...]:
+    return tuple(str(item).strip() for item in raw if str(item).strip())
+
+
+def validate_plan_payload(payload: PlanPayload) -> None:
+    if not payload.user_message:
+        raise ValueError("user_message must not be empty")
+    if not payload.commander_interpretation:
+        raise ValueError("commander_interpretation must not be empty")
+    if not payload.task_plan:
+        raise ValueError("task_plan must not be empty")
+    if not payload.coverage_table:
+        raise ValueError("coverage_table must not be empty")
+    if not payload.risk_level:
+        raise ValueError("risk_level must not be empty")
+
+
+def validate_worker_assignment(assignment: WorkerAssignment, index: int) -> None:
+    if not assignment.worker_id:
+        raise ValueError(f"worker_assignments[{index}].worker_id must not be empty")
+    if not assignment.child_role:
+        raise ValueError(f"worker_assignments[{index}].child_role must not be empty")
+    if not assignment.scope:
+        raise ValueError(f"worker_assignments[{index}].scope must not be empty")
+    if not assignment.expected_evidence:
+        raise ValueError(f"worker_assignments[{index}].expected_evidence must not be empty")
+
+
+def validate_delegation_payload(payload: DelegationPayload) -> None:
+    if not payload.commander_plan:
+        raise ValueError("commander_plan must not be empty")
+    if not payload.worker_assignments:
+        raise ValueError("worker_assignments must not be empty")
+    if not payload.empty_result_policy:
+        raise ValueError("empty_result_policy must not be empty")
+    if not payload.risk_level:
+        raise ValueError("risk_level must not be empty")
+    for index, assignment in enumerate(payload.worker_assignments):
+        validate_worker_assignment(assignment, index)
+
+
+def plan_payload_to_dict(payload: PlanPayload) -> dict[str, Any]:
+    validate_plan_payload(payload)
+    return {
+        "user_message": payload.user_message,
+        "commander_interpretation": payload.commander_interpretation,
+        "task_plan": list(payload.task_plan),
+        "coverage_table": list(payload.coverage_table),
+        "risk_level": payload.risk_level,
+        "constraints": list(payload.constraints),
+        "source_evidence": list(payload.source_evidence),
+        "known_unresolved": list(payload.known_unresolved),
+    }
+
+
+def worker_assignment_to_dict(assignment: WorkerAssignment) -> dict[str, Any]:
+    validate_worker_assignment(assignment, 0)
+    return {
+        "worker_id": assignment.worker_id,
+        "child_role": assignment.child_role,
+        "scope": assignment.scope,
+        "expected_evidence": list(assignment.expected_evidence),
+    }
+
+
+def delegation_payload_to_dict(payload: DelegationPayload) -> dict[str, Any]:
+    validate_delegation_payload(payload)
+    return {
+        "commander_plan": payload.commander_plan,
+        "worker_assignments": [
+            worker_assignment_to_dict(assignment)
+            for assignment in payload.worker_assignments
+        ],
+        "empty_result_policy": payload.empty_result_policy,
+        "risk_level": payload.risk_level,
+        "handoff_expectations": payload.handoff_expectations,
+        "known_unresolved": list(payload.known_unresolved),
+    }
 
 
 def validate_final_payload(payload: FinalPayload) -> None:

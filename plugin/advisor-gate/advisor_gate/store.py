@@ -199,3 +199,33 @@ class ReceiptStore:
 
     def has_active_child_session(self, parent_session_id: str) -> bool:
         return bool(self.active_child_sessions(parent_session_id))
+
+    def subagent_role_summary(self, parent_session_id: str) -> tuple[dict[str, Any], ...]:
+        if not parent_session_id:
+            return ()
+        summaries: list[dict[str, Any]] = []
+        for entry in self.read_all():
+            if entry.get("session_id") != parent_session_id:
+                continue
+            if entry.get("source") not in {"subagent_start", "subagent_stop"}:
+                continue
+            extra = entry.get("extra")
+            if not isinstance(extra, dict):
+                continue
+            child_session_id = str(extra.get("child_session_id") or "").strip()
+            child_role = str(extra.get("child_role") or "").strip()
+            summary: dict[str, Any] = {
+                "event": str(entry.get("event") or entry.get("source") or "").strip(),
+                "timestamp": str(entry.get("timestamp") or "").strip(),
+                "parent_session_id": parent_session_id,
+                "child_session_id": child_session_id,
+                "child_role": child_role,
+            }
+            child_status = str(extra.get("child_status") or "").strip()
+            child_summary = str(extra.get("child_summary") or "").strip()
+            if child_status:
+                summary["child_status"] = child_status
+            if child_summary:
+                summary["child_summary"] = child_summary
+            summaries.append(summary)
+        return tuple(summaries)

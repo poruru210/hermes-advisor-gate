@@ -48,3 +48,26 @@ def test_resolution_gate_write_read_roundtrip(tmp_path):
     store.append_resolution_gate(session_id="s1", gate=gate, source="test")
 
     assert store.latest_resolution_gate(session_id="s1").commander_decision.value == "continue"
+
+
+def test_subagent_role_summary_returns_parent_child_role_evidence(tmp_path):
+    store = ReceiptStore.from_path(tmp_path / "receipts.jsonl")
+    store.append(
+        {
+            "timestamp": "2026-07-06T00:00:00+00:00",
+            "source": "subagent_start",
+            "session_id": "parent",
+            "event": "subagent_start",
+            "extra": {
+                "parent_session_id": "parent",
+                "child_session_id": "child",
+                "child_role": "leaf",
+            },
+        }
+    )
+
+    summary = store.subagent_role_summary("parent")
+
+    assert summary[0]["parent_session_id"] == "parent"
+    assert summary[0]["child_session_id"] == "child"
+    assert summary[0]["child_role"] == "leaf"

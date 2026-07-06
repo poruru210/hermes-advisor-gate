@@ -16,11 +16,16 @@ not output generic improvement templates.
 PHASE_INSTRUCTIONS = {
     "A1_PLAN": (
         "Audit the plan before implementation. Check whether constraints, source "
-        "of truth, deliverables, tests, and unresolved items are explicit."
+        "of truth, deliverables, tests, and unresolved items are explicit. The "
+        "packet must include user_message, commander_interpretation, task_plan, "
+        "coverage_table, and risk_level."
     ),
     "A2_DELEGATION": (
         "Audit delegation. Check whether subagent roles, scope, evidence, and "
-        "fanout/depth constraints match the requested topology."
+        "fanout/depth constraints match the requested topology. The packet must "
+        "include commander_plan, worker_assignments, empty_result_policy, and "
+        "risk_level. If observed_subagents are supplied, use child_role and "
+        "parent/child session evidence when judging delegation."
     ),
     "A3_EXCEPTION": (
         "Audit an exception path. Check whether failures are captured honestly, "
@@ -31,6 +36,8 @@ PHASE_INSTRUCTIONS = {
         "has evidence, tests/checks are reported, unresolved items are named, and "
         "the final claim does not overstate completion. The packet must use the "
         "FinalPayload shape: actions_taken, tests_or_checks, known_unresolved, "
-        "final_answer_draft, and flow_summary."
+        "final_answer_draft, and flow_summary. If observed_subagents are supplied, "
+        "verify that worker role, scope, status, and evidence are reflected in the "
+        "final claim."
     ),
 }
