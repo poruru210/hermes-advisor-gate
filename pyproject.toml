@@ -20,12 +20,16 @@ dev = [
 [project.entry-points."hermes_agent.plugins"]
 advisor-gate = "advisor_gate.registration"
 
+[tool.setuptools]
+package-dir = {"" = "plugin/advisor-gate"}
+
 [tool.setuptools.packages.find]
+where = ["plugin/advisor-gate"]
 include = ["advisor_gate*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["plugin/advisor-gate"]
 
 [tool.ruff]
 line-length = 100

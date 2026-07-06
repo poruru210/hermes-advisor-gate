@@ -21,7 +21,7 @@ dependencies. It verifies:
 - Python source compiles.
 - Unit tests pass.
 - Ruff lint passes.
-- ty type checking passes for `advisor_gate`.
+- ty type checking passes for `plugin/advisor-gate/advisor_gate`.
 
 ## Repository Test Coverage
 
@@ -44,6 +44,7 @@ Tests added under `tests/` cover:
 Run after installing/enabling the plugin in the real Hermes environment:
 
 ```bash
+hermes plugins install poruru210/hermes-advisor-gate/plugin/advisor-gate --enable
 hermes config check
 hermes doctor
 hermes fallback list

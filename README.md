@@ -57,17 +57,15 @@ Verdicts:
 
 ## Install / Enable
 
-For package-style installation, install this repo into the Hermes Python
-environment and enable the plugin:
+Install the directory plugin through the official Hermes plugin installer:
 
 ```bash
-python -m pip install -e .
-hermes plugins enable advisor-gate
+hermes plugins install poruru210/hermes-advisor-gate/plugin/advisor-gate --enable
 ```
 
-For a directory plugin, keep this repo installed in the Hermes Python
-environment and symlink `plugin/advisor-gate` into
-`~/.hermes/plugins/advisor-gate`.
+The installer clones only `plugin/advisor-gate`, so that directory is
+self-contained and includes both `plugin.yaml` / `__init__.py` and the
+`advisor_gate` Python package.
 
 Merge `config/advisor-gate.example.yaml` into the real Hermes config. Leave
 `advisor_gate.provider` and `advisor_gate.model` empty unless the plugin LLM

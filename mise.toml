@@ -4,7 +4,7 @@ uv = "latest"
 
 [tasks.compile]
 description = "Compile project Python files."
-run = "uv run python -m compileall advisor_gate tests"
+run = "uv run python -m compileall plugin/advisor-gate/advisor_gate tests"
 
 [tasks.test]
 description = "Run pytest."
@@ -16,7 +16,7 @@ run = "uv run --extra dev python -m ruff check ."
 
 [tasks.typecheck]
 description = "Run ty type checks."
-run = "uv run --extra dev ty check advisor_gate"
+run = "uv run --extra dev ty check plugin/advisor-gate/advisor_gate"
 
 [tasks.check]
 description = "Run the standard local validation set."

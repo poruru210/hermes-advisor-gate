@@ -21,20 +21,30 @@
 
 ## Current Artifact Map
 
-- `advisor_gate/schemas.py`: Advisor phases, verdicts, findings, result schema.
-- `advisor_gate/schemas.py`: also defines FinalPayload and ResolutionGate.
-- `advisor_gate/policy.py`: PASS / CHANGES_REQUIRED / BLOCK policy mapping.
-- `advisor_gate/packets.py`: prompt packet builders.
-- `advisor_gate/store.py`: JSONL receipt store and redaction.
-- `advisor_gate/registration.py`: Hermes plugin registration.
-- `advisor_gate/config.py`: Advisor Gate config loading.
-- `advisor_gate/audit_handlers.py`: `advisor_audit` tool handling.
-- `advisor_gate/resolution_handlers.py`: `advisor_resolution_gate` tool handling.
-- `advisor_gate/event_hooks.py`: observer hooks for subagents and tool results.
-- `advisor_gate/pre_tool_gate.py`: A1/A2 `pre_tool_call` enforcement.
-- `advisor_gate/final_gate.py`: A3 exception/final verification and soft gate.
-- `advisor_gate/receipt_queries.py`: receipt lookup and freshness helpers.
-- `plugin/advisor-gate/`: directory-plugin wrapper and manifest.
+- `plugin/advisor-gate/plugin.yaml`: official Hermes directory-plugin manifest.
+- `plugin/advisor-gate/__init__.py`: directory-plugin wrapper.
+- `plugin/advisor-gate/advisor_gate/schemas.py`: Advisor phases, verdicts,
+  findings, result schema, FinalPayload, and ResolutionGate.
+- `plugin/advisor-gate/advisor_gate/policy.py`: PASS / CHANGES_REQUIRED /
+  BLOCK policy mapping.
+- `plugin/advisor-gate/advisor_gate/packets.py`: prompt packet builders.
+- `plugin/advisor-gate/advisor_gate/store.py`: JSONL receipt store and
+  redaction.
+- `plugin/advisor-gate/advisor_gate/registration.py`: Hermes plugin
+  registration.
+- `plugin/advisor-gate/advisor_gate/config.py`: Advisor Gate config loading.
+- `plugin/advisor-gate/advisor_gate/audit_handlers.py`: `advisor_audit` tool
+  handling.
+- `plugin/advisor-gate/advisor_gate/resolution_handlers.py`:
+  `advisor_resolution_gate` tool handling.
+- `plugin/advisor-gate/advisor_gate/event_hooks.py`: observer hooks for
+  subagents and tool results.
+- `plugin/advisor-gate/advisor_gate/pre_tool_gate.py`: A1/A2 `pre_tool_call`
+  enforcement.
+- `plugin/advisor-gate/advisor_gate/final_gate.py`: A3 exception/final
+  verification and soft gate.
+- `plugin/advisor-gate/advisor_gate/receipt_queries.py`: receipt lookup and
+  freshness helpers.
 - `skills/advisor-gate/SKILL.md`: agent-facing workflow guidance.
 - `config/hermes.baseline.example.yaml`: official topology config.
 - `config/advisor-gate.example.yaml`: plugin config example.
