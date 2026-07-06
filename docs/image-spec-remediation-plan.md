@@ -13,7 +13,7 @@
 4. 本体改修が理想だが、公式の拡張口、記録、設定、手順で回避する。
 5. 直接の本体改修や実行時の差し替えは、公式手段でどうしても満たせない場合の最後の検討対象にする。
 
-ここでいう「呼び出し側の手順書」は、`skills/advisor-gate/SKILL.md` のように、
+ここでいう「呼び出し側の手順書」は、`runtime-profile/skills/advisor-flow/SKILL.md` のように、
 統括担当に監査道具の使い方、入力形、指摘処理、最終回答前確認を明示するものを指す。
 
 ## 仕分けの分類
@@ -121,9 +121,9 @@
 | 項目 | 実装状況 |
 |---|---|
 | 計画監査と委任監査の入力検証 | 計画監査と委任監査の必須項目をプラグインで検証する。 |
-| 呼び出し側の手順書の入力ひな形 | `skills/advisor-gate/SKILL.md` に計画監査、委任監査、最終監査の入力ひな形を追加した。 |
+| 呼び出し側の手順書の入力ひな形 | `runtime-profile/skills/advisor-flow/SKILL.md` に計画監査、委任監査、最終監査の入力ひな形を追加した。 |
 | `child_role` と親子関係の反映 | 子作業単位の開始終了記録を要約し、委任監査と最終監査の監査入力および記録へ反映する。 |
-| 通し検証手順 | `docs/end-to-end-validation-runbook.md` と `tests/test_end_to_end_flow.py` で、Commander / Worker / Advisor の固定検証手順を追加した。 |
+| 通し検証手順 | `runtime-profile/runbooks/live-smoke.md` と `tests/test_end_to_end_flow.py` で、Commander / Worker / Advisor の固定検証手順を追加した。 |
 
 ## 結論
 

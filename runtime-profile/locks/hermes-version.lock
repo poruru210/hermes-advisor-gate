@@ -1,0 +1,20 @@
+# Hermes runtime version lock.
+
+verified_on:
+  host: pi@10.1.20.11
+  date: 2026-07-06
+
+hermes:
+  version: 0.18.0
+  service: hermes-serve.service
+
+python:
+  version: 3.11.15
+
+tooling:
+  mise: required
+  uv: required
+
+notes:
+  - This file records the runtime version observed during Pi validation.
+  - It does not contain secrets, auth material, logs, receipts, or local config.

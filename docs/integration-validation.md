@@ -41,7 +41,7 @@ Tests added under `tests/` cover:
 - Commander / Worker / Advisor end-to-end flow:
   `A1_PLAN -> A2_DELEGATION -> Worker receipts -> A3_EXCEPTION -> A3_FINAL -> RESOLUTION_GATE`
 
-See `docs/end-to-end-validation-runbook.md` for the repeatable runbook.
+See `runtime-profile/runbooks/live-smoke.md` for the repeatable runbook.
 
 ## Hermes Runtime Checklist
 

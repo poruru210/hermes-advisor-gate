@@ -1,4 +1,4 @@
-# Advisor Gate
+# Advisor Flow Runtime
 
 Use this skill when work must pass Hermes Advisor Gate before final delivery.
 

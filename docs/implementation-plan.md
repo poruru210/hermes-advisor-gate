@@ -45,9 +45,9 @@
   verification and soft gate.
 - `plugin/advisor-gate/advisor_gate/receipt_queries.py`: receipt lookup and
   freshness helpers.
-- `skills/advisor-gate/SKILL.md`: agent-facing workflow guidance.
-- `config/hermes.baseline.example.yaml`: official topology config.
-- `config/advisor-gate.example.yaml`: plugin config example.
+- `runtime-profile/skills/advisor-flow/SKILL.md`: agent-facing workflow guidance.
+- `runtime-profile/config/hermes.config.example.yaml`: official topology config.
+- `runtime-profile/config/advisor-gate.example.yaml`: plugin config example.
 - `tests/`: unit and hook tests.
 
 ## Runtime Sequence

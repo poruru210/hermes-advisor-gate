@@ -1,0 +1,12 @@
+# Plugin lock for this personal Hermes runtime profile.
+
+advisor-gate:
+  source: poruru210/hermes-runtime/plugin/advisor-gate
+  install_command: hermes plugins install poruru210/hermes-runtime/plugin/advisor-gate --force --enable
+  local_path: plugin/advisor-gate
+  plugin_name: advisor-gate
+  version: 0.1.0
+  ownership: self
+  notes:
+    - Plugin code is versioned in this repository.
+    - Runtime installs should use the repository commit currently checked out.

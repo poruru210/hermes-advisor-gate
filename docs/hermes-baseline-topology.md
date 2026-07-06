@@ -71,7 +71,7 @@ Phase 1 adds the runbook needed to apply and validate the official baseline.
 
 ## Baseline Config
 
-Use `config/hermes.baseline.example.yaml` as a sanitized example. It contains no
+Use `runtime-profile/config/hermes.config.example.yaml` as a sanitized example. It contains no
 secrets. Copy only the relevant non-secret settings into `~/.hermes/config.yaml`
 or a Hermes profile config after reviewing runtime availability.
 
@@ -95,13 +95,13 @@ Windows PowerShell example:
 
 ```powershell
 Copy-Item -LiteralPath "$env:USERPROFILE\.hermes\config.yaml" -Destination "$env:USERPROFILE\.hermes\config.yaml.backup" -ErrorAction SilentlyContinue
-Copy-Item -LiteralPath ".\config\hermes.baseline.example.yaml" -Destination "$env:USERPROFILE\.hermes\config.yaml"
+Copy-Item -LiteralPath ".\runtime-profile\config\hermes.config.example.yaml" -Destination "$env:USERPROFILE\.hermes\config.yaml"
 ```
 
 Linux or macOS symlink example, only if this repository path is stable:
 
 ```bash
-ln -s "$(pwd)/config/hermes.baseline.example.yaml" ~/.hermes/config.yaml
+ln -s "$(pwd)/runtime-profile/config/hermes.config.example.yaml" ~/.hermes/config.yaml
 ```
 
 For an existing production Hermes config, prefer merging the non-secret sections

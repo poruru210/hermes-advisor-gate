@@ -73,13 +73,13 @@ Prefer small, reviewable changes.
 
 Keep implementation split across:
 
-- baseline config docs
-- schemas
-- prompt packets
-- policy
-- receipt store
-- Hermes plugin integration
-- docs
+- `plugin/advisor-gate/`: Advisor tool, hook, schema, policy, packet, receipt-store implementation
+- `runtime-profile/config/`: sanitized Hermes runtime config examples
+- `runtime-profile/skills/`: Commander, Worker, and Advisor-flow runtime skills
+- `runtime-profile/runbooks/`: install, live smoke, and rollback operations
+- `runtime-profile/locks/`: non-secret runtime and plugin version locks
+- `docs/`: architecture, operations, image compliance, design records
+- `tests/`: plugin and runtime-flow verification
 
 Do not mix unrelated phases in one change.
 
