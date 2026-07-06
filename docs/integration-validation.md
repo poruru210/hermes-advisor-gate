@@ -48,7 +48,7 @@ See `docs/end-to-end-validation-runbook.md` for the repeatable runbook.
 Run after installing/enabling the plugin in the real Hermes environment:
 
 ```bash
-hermes plugins install poruru210/hermes-advisor-gate/plugin/advisor-gate --enable
+hermes plugins install poruru210/hermes-runtime/plugin/advisor-gate --enable
 hermes config check
 hermes doctor
 hermes fallback list

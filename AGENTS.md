@@ -2,10 +2,11 @@
 
 ## Project Purpose
 
-This repository implements two related pieces around Hermes Agent:
+This repository implements a personal Hermes runtime profile:
 
 1. A baseline Hermes topology configuration.
 2. Hermes Advisor Gate as a private plugin / skill / receipt-store extension.
+3. Commander / Worker / Advisor runtime guidance, runbooks, and validation.
 
 The baseline topology uses official Hermes configuration only.
 
@@ -38,7 +39,7 @@ docs or source, record it as unresolved instead of inventing an API.
 
 Do not fork or modify Hermes core unless explicitly asked in a separate task.
 
-This repository must remain a baseline config plus plugin / skill /
+This repository must remain a runtime profile plus plugin / skill /
 receipt-store implementation unless a later ADR approves a minimal core patch.
 
 ## Secrets Policy

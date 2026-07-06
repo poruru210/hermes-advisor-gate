@@ -1,9 +1,10 @@
-# Hermes Advisor Gate
+# Hermes Runtime
 
 This workspace contains:
 
 - an official-Hermes baseline topology config and validation runbook
 - a private Advisor Gate plugin, skill, and JSONL receipt store
+- personal Hermes runtime profile guidance for Commander / Worker / Advisor flow
 
 Hermes core is not forked or patched. Advisor Gate uses official Hermes plugin
 surfaces only.
@@ -68,7 +69,7 @@ Verdicts:
 Install the directory plugin through the official Hermes plugin installer:
 
 ```bash
-hermes plugins install poruru210/hermes-advisor-gate/plugin/advisor-gate --enable
+hermes plugins install poruru210/hermes-runtime/plugin/advisor-gate --enable
 ```
 
 The installer clones only `plugin/advisor-gate`, so that directory is

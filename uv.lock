@@ -12,7 +12,7 @@ wheels = [
 ]
 
 [[package]]
-name = "hermes-advisor-gate"
+name = "hermes-runtime"
 version = "0.1.0"
 source = { editable = "." }
 

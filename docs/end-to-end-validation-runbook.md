@@ -92,7 +92,7 @@ create a fixed number of leaf Workers.
 On the Pi host, update the repository checkout:
 
 ```bash
-cd /home/pi/hermes-advisor-gate
+cd /home/pi/hermes-runtime
 git pull --ff-only
 mise run check
 uv run --extra dev python -m pytest tests/test_end_to_end_flow.py
@@ -101,7 +101,7 @@ uv run --extra dev python -m pytest tests/test_end_to_end_flow.py
 Refresh the installed plugin through the official Hermes installer:
 
 ```bash
-hermes plugins install poruru210/hermes-advisor-gate/plugin/advisor-gate --force --enable
+hermes plugins install poruru210/hermes-runtime/plugin/advisor-gate --force --enable
 hermes gateway restart
 hermes config check
 hermes doctor
