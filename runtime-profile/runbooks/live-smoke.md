@@ -197,6 +197,29 @@ Pass when:
 
 ## Natural-Language Commander Smoke
 
+For repeatable Pi validation, prefer the managed driver. It runs the smoke in
+bounded phases, writes status and logs, and avoids leaving a single long SSH
+session as the only source of progress:
+
+```bash
+cd /home/pi/hermes-runtime
+bash runtime-profile/scripts/live-smoke-driver.sh
+```
+
+The driver writes:
+
+- `outputs/live-smoke/<run-id>/status.txt`
+- `outputs/live-smoke/<run-id>/smoke.log`
+- `outputs/live-smoke/<run-id>/summary.md`
+- task/session id files for parent, worker, and Commander session
+
+Poll progress from another shell:
+
+```bash
+tail -n 40 outputs/live-smoke/<run-id>/smoke.log
+cat outputs/live-smoke/<run-id>/status.txt
+```
+
 Use a new Commander conversation. The prompt should not ask the user to act as
 the orchestrator or name internal phases.
 
